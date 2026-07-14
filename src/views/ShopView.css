@@ -1,0 +1,126 @@
+/* 商店界面 */
+.shop-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.shop-panel {
+  max-width: 900px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.shop-gold {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-accent-gold);
+}
+
+.shop-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.shop-item {
+  background-color: var(--color-bg-primary);
+  border: 2px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.shop-item:hover {
+  border-color: var(--color-accent-gold);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.shop-item.sold-out {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shop-item.sold-out:hover {
+  transform: none;
+  border-color: var(--color-bg-tertiary);
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.item-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.item-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-accent-gold);
+}
+
+.item-description {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-sm);
+}
+
+.item-stats {
+  padding-top: var(--spacing-sm);
+  border-top: var(--border-primary);
+  font-size: 13px;
+  color: var(--color-accent-green);
+}
+
+.sold-out-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--color-accent-red);
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.shop-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+}
+
+/* 响应式 */
+@media (max-width: 800px) {
+  .shop-items {
+    grid-template-columns: 1fr;
+  }
+}

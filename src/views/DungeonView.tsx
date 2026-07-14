@@ -6,6 +6,7 @@ import { EventGenerator } from '../systems/EventGenerator'
 import { createDefaultTeam } from '../data/characters'
 import { RewardSelectView } from './RewardSelectView'
 import { EventView } from './EventView'
+import { ShopView } from './ShopView'
 import type { DungeonPath, DungeonNode, NodeType, Reward, RandomEvent, EventChoice } from '../types/dungeon'
 import './DungeonView.css'
 
@@ -80,7 +81,7 @@ export const DungeonView: React.FC = () => {
         break
       case 'shop':
         console.log('[DungeonView] 打开商店')
-        alert('欢迎来到商店！\n\n（商店系统开发中）')
+        setOverlayType('shop')
         break
       case 'rest':
         console.log('[DungeonView] 休息恢复')
@@ -134,29 +135,30 @@ export const DungeonView: React.FC = () => {
     setOverlayType('none')
   }
 
-  const handleEventChoice = (choice: EventChoice) => {
+  const handleShopPurchase = (item: any) => {
     if (!gameState) return
 
-    const outcome = choice.outcome
-
-    // 应用结果
-    if (outcome.damage) {
-      gameState.damageTeam(outcome.damage)
-    }
-    if (outcome.heal) {
-      gameState.healTeam(outcome.heal)
-    }
-    if (outcome.reward) {
-      // 应用奖励
-      const reward = outcome.reward
-      if (reward.type === 'gold' && reward.amount) {
-        gameState.addGold(reward.amount)
-      }
-      // TODO: 处理其他类型奖励
+    // 扣除金币
+    if (!gameState.spendGold(item.price)) {
+      alert('金币不足！')
+      return
     }
 
-    // 显示结果
-    alert(outcome.description)
+    // 应用物品
+    if (item.type === 'equipment' && item.item) {
+      gameState.addEquipment(gameState.getSave().team[0].id, item.item)
+    } else if (item.type === 'relic' && item.item) {
+      gameState.addRelic(item.item)
+    } else if (item.type === 'heal' && item.healAmount) {
+      gameState.healTeam(item.healAmount)
+    }
+
+    gameState.saveToLocalStorage()
+    setPath(gameState.getSave().dungeonPath)
+  }
+
+  const handleShopClose = () => {
+    if (!gameState) return
 
     // 完成当前节点
     gameState.completeCurrentNode()
@@ -253,11 +255,12 @@ export const DungeonView: React.FC = () => {
         />
       )}
 
-      {/* 事件界面 */}
-      {overlayType === 'event' && currentEvent && (
-        <EventView
-          event={currentEvent}
-          onChoice={handleEventChoice}
+      {/* 商店界面 */}
+      {overlayType === 'shop' && gameState && (
+        <ShopView
+          currentGold={gameState.getSave().gold}
+          onPurchase={handleShopPurchase}
+          onClose={handleShopClose}
         />
       )}
     </div>
