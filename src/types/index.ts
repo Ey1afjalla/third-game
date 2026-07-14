@@ -95,6 +95,7 @@ export interface Unit {
 
   // 属性
   stats: UnitStats
+  baseStats?: UnitStats // 基础属性（未装备前）
 
   // 当前状态
   hp: number

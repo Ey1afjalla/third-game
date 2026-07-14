@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import { CombatView } from './views/CombatView'
+import { DungeonView } from './views/DungeonView'
 
 function App() {
   const [gameState, setGameState] = useState<'menu' | 'combat' | 'dungeon'>('menu')
@@ -19,39 +20,45 @@ function App() {
             <div className="menu-buttons flex-column gap-md">
               <button
                 className="primary"
+                onClick={() => setGameState('dungeon')}
+              >
+                开始冒险
+              </button>
+              <button
                 onClick={() => setGameState('combat')}
               >
-                开始战斗
+                快速战斗（测试）
               </button>
               <button disabled>
-                进入地下城（开发中）
+                继续游戏（开发中）
               </button>
               <button disabled>
-                小队配置（开发中）
-              </button>
-              <button disabled>
-                战斗复盘（开发中）
-              </button>
-              <button disabled>
-                调参面板（开发中）
+                设置（开发中）
               </button>
             </div>
 
             <div className="version-info">
-              <p>版本：v0.1.0-dev</p>
-              <p>状态：基础战斗系统已完成</p>
+              <p>版本：v0.3.0-dev</p>
+              <p>状态：阶段3开发中 - Roguelike构筑</p>
               <p>最后更新：2026-07-15</p>
             </div>
           </div>
         )}
 
+        {gameState === 'dungeon' && (
+          <div className="dungeon-container">
+            <button onClick={() => setGameState('menu')} className="back-button">
+              ← 返回主菜单
+            </button>
+            <DungeonView />
+          </div>
+        )}
+
         {gameState === 'combat' && (
           <div className="combat-container">
-            <div className="combat-header">
-              <button onClick={() => setGameState('menu')}>
-                ← 返回主菜单
-              </button>
-            </div>
+            <button onClick={() => setGameState('menu')} className="back-button">
+              ← 返回主菜单
+            </button>
             <CombatView />
           </div>
         )}

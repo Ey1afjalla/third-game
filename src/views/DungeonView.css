@@ -1,0 +1,263 @@
+/* 地下城路线视图 */
+.dungeon-view {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+/* 地下城地图 */
+.dungeon-map {
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  min-height: 500px;
+}
+
+.dungeon-grid {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--spacing-xl);
+  min-width: 800px;
+}
+
+.dungeon-floor {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  position: relative;
+}
+
+.floor-label {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+/* 地下城节点 */
+.dungeon-node {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--color-bg-tertiary);
+  background-color: var(--color-bg-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.dungeon-node:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-hover);
+}
+
+.dungeon-node.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
+.dungeon-node.current {
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 0 20px var(--color-accent-gold);
+  animation: pulse 2s infinite;
+}
+
+.dungeon-node.completed {
+  border-color: var(--color-accent-green);
+  opacity: 0.7;
+}
+
+.dungeon-node.available:hover {
+  border-color: var(--color-accent-blue);
+}
+
+/* 节点图标 */
+.node-icon {
+  font-size: 32px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.node-type {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+/* 节点连接线 */
+.node-connections {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 2px;
+  height: var(--spacing-xl);
+  background: linear-gradient(to bottom, var(--color-accent-gold), transparent);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* 节点类型颜色 */
+.dungeon-node.battle {
+  border-color: var(--color-accent-red);
+}
+
+.dungeon-node.elite {
+  border-color: var(--color-accent-purple);
+}
+
+.dungeon-node.boss {
+  border-color: var(--color-accent-red);
+  border-width: 4px;
+}
+
+.dungeon-node.event {
+  border-color: var(--color-accent-blue);
+}
+
+.dungeon-node.shop {
+  border-color: var(--color-accent-gold);
+}
+
+.dungeon-node.rest {
+  border-color: var(--color-accent-green);
+}
+
+/* 奖励选择面板 */
+.reward-panel {
+  background-color: var(--color-bg-secondary);
+}
+
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.reward-card {
+  background-color: var(--color-bg-primary);
+  border: 2px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.reward-card:hover {
+  border-color: var(--color-accent-gold);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.reward-icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.reward-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.reward-description {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.reward-stats {
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: var(--border-primary);
+  font-size: 12px;
+  color: var(--color-accent-green);
+}
+
+/* 稀有度颜色 */
+.reward-card.common {
+  border-color: #999;
+}
+
+.reward-card.rare {
+  border-color: var(--color-accent-blue);
+}
+
+.reward-card.epic {
+  border-color: var(--color-accent-purple);
+}
+
+.reward-card.legendary {
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* 游戏信息栏 */
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.info-label {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.info-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-accent-gold);
+}
+
+/* 动画 */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--color-accent-gold);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--color-accent-gold);
+  }
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .rewards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dungeon-grid {
+    min-width: 600px;
+  }
+
+  .dungeon-node {
+    width: 60px;
+    height: 60px;
+  }
+
+  .node-icon {
+    font-size: 24px;
+  }
+}

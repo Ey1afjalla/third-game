@@ -66,9 +66,42 @@
   margin: var(--spacing-xs) 0;
 }
 
-.combat-container {
+.dungeon-container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
+}
+
+.dungeon-header {
+  margin-bottom: var(--spacing-md);
+}
+
+.team-status {
+  background-color: var(--color-bg-secondary);
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.team-member {
+  background-color: var(--color-bg-primary);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.member-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.member-hp {
+  font-size: 13px;
+  color: var(--color-text-secondary);
 }
 
 .combat-header {
