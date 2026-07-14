@@ -1,0 +1,96 @@
+/* 事件选择界面 */
+.event-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.event-panel {
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.event-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-accent-gold);
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.event-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-md);
+}
+
+.event-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.event-choice {
+  background-color: var(--color-bg-primary);
+  border: 2px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.event-choice:hover {
+  border-color: var(--color-accent-blue);
+  transform: translateX(8px);
+  box-shadow: var(--shadow-hover);
+}
+
+.event-choice.selected {
+  border-color: var(--color-accent-gold);
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.choice-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.choice-preview {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+/* 响应式 */
+@media (max-width: 600px) {
+  .event-title {
+    font-size: 20px;
+  }
+
+  .event-description {
+    font-size: 14px;
+  }
+
+  .choice-text {
+    font-size: 14px;
+  }
+}

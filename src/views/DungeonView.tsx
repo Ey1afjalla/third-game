@@ -43,19 +43,22 @@ export const DungeonView: React.FC = () => {
   }, [])
 
   const handleNodeClick = (node: DungeonNode) => {
-    if (!gameState || node.state !== 'available') {
-      console.log('[DungeonView] Node not available:', node.state)
+    // 允许点击current和available状态的节点
+    if (!gameState || (node.state !== 'available' && node.state !== 'current')) {
+      console.log('[DungeonView] Node not clickable:', node.state)
       return
     }
 
-    console.log('[DungeonView] Clicked node:', node.type, node.id)
+    console.log('[DungeonView] Clicked node:', node.type, node.id, node.state)
 
-    // 选择节点
-    gameState.moveToNode(node.id)
-    gameState.saveToLocalStorage()
-    setPath(gameState.getSave().dungeonPath)
+    // 选择节点（如果是available状态，移动到该节点）
+    if (node.state === 'available') {
+      gameState.moveToNode(node.id)
+      gameState.saveToLocalStorage()
+      setPath(gameState.getSave().dungeonPath)
+    }
 
-    // 根据节点类型跳转
+    // 根据节点类型执行对应操作
     switch (node.type) {
       case 'battle':
       case 'elite':
