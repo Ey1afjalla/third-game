@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { DungeonGenerator } from '../systems/DungeonGenerator'
 import { GameState } from '../systems/GameState'
+import { RewardGenerator } from '../systems/RewardGenerator'
+import { EventGenerator } from '../systems/EventGenerator'
 import { createDefaultTeam } from '../data/characters'
-import type { DungeonPath, DungeonNode, NodeType } from '../types/dungeon'
+import { RewardSelectView } from './RewardSelectView'
+import { EventView } from './EventView'
+import type { DungeonPath, DungeonNode, NodeType, Reward, RandomEvent, EventChoice } from '../types/dungeon'
 import './DungeonView.css'
 
 const NODE_ICONS: Record<NodeType, string> = {
@@ -23,11 +27,16 @@ const NODE_NAMES: Record<NodeType, string> = {
   rest: '休息',
 }
 
+type OverlayType = 'none' | 'reward' | 'event' | 'shop'
+
 export const DungeonView: React.FC = () => {
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [path, setPath] = useState<DungeonPath | null>(null)
+  const [overlayType, setOverlayType] = useState<OverlayType>('none')
+  const [currentRewards, setCurrentRewards] = useState<Reward[]>([])
+  const [currentEvent, setCurrentEvent] = useState<RandomEvent | null>(null)
 
-  useEffect(() => {
+  React.useEffect(() => {
     // 尝试加载存档
     let state = GameState.loadFromLocalStorage()
 
@@ -63,22 +72,18 @@ export const DungeonView: React.FC = () => {
       case 'battle':
       case 'elite':
         console.log('[DungeonView] 触发战斗:', node.type)
-        alert(`即将开始${node.type === 'elite' ? '精英' : '普通'}战斗！\n\n（战斗系统集成开发中）`)
-        // TODO: 跳转到战斗
+        handleBattleReward(node.type === 'elite')
         break
       case 'event':
         console.log('[DungeonView] 触发事件')
-        alert('触发随机事件！\n\n（事件系统开发中）')
-        // TODO: 触发事件
+        handleEvent()
         break
       case 'shop':
         console.log('[DungeonView] 打开商店')
         alert('欢迎来到商店！\n\n（商店系统开发中）')
-        // TODO: 打开商店
         break
       case 'rest':
         console.log('[DungeonView] 休息恢复')
-        // 直接治疗
         gameState.healTeam(50)
         gameState.completeCurrentNode()
         gameState.saveToLocalStorage()
@@ -88,9 +93,76 @@ export const DungeonView: React.FC = () => {
       case 'boss':
         console.log('[DungeonView] Boss战')
         alert('Boss战即将开始！\n\n（Boss战开发中）')
-        // TODO: Boss战
         break
     }
+  }
+
+  const handleBattleReward = (isElite: boolean) => {
+    const rewardGen = new RewardGenerator()
+    const rewards = rewardGen.generateBattleRewards(isElite)
+    setCurrentRewards(rewards)
+    setOverlayType('reward')
+  }
+
+  const handleEvent = () => {
+    const eventGen = new EventGenerator()
+    const event = eventGen.generateEvent()
+    setCurrentEvent(event)
+    setOverlayType('event')
+  }
+
+  const handleRewardSelect = (reward: Reward) => {
+    if (!gameState) return
+
+    // 应用奖励
+    if (reward.type === 'equipment' && reward.item) {
+      const equipment = reward.item as any
+      gameState.addEquipment(gameState.getSave().team[0].id, equipment)
+    } else if (reward.type === 'relic' && reward.item) {
+      const relic = reward.item as any
+      gameState.addRelic(relic)
+    } else if (reward.type === 'gold' && reward.amount) {
+      gameState.addGold(reward.amount)
+    } else if (reward.type === 'heal' && reward.amount) {
+      gameState.healTeam(reward.amount)
+    }
+
+    // 完成当前节点
+    gameState.completeCurrentNode()
+    gameState.saveToLocalStorage()
+    setPath(gameState.getSave().dungeonPath)
+    setOverlayType('none')
+  }
+
+  const handleEventChoice = (choice: EventChoice) => {
+    if (!gameState) return
+
+    const outcome = choice.outcome
+
+    // 应用结果
+    if (outcome.damage) {
+      gameState.damageTeam(outcome.damage)
+    }
+    if (outcome.heal) {
+      gameState.healTeam(outcome.heal)
+    }
+    if (outcome.reward) {
+      // 应用奖励
+      const reward = outcome.reward
+      if (reward.type === 'gold' && reward.amount) {
+        gameState.addGold(reward.amount)
+      }
+      // TODO: 处理其他类型奖励
+    }
+
+    // 显示结果
+    alert(outcome.description)
+
+    // 完成当前节点
+    gameState.completeCurrentNode()
+    gameState.saveToLocalStorage()
+    setPath(gameState.getSave().dungeonPath)
+    setOverlayType('none')
   }
 
   const renderNode = (node: DungeonNode) => {
@@ -171,6 +243,23 @@ export const DungeonView: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* 奖励选择界面 */}
+      {overlayType === 'reward' && (
+        <RewardSelectView
+          rewards={currentRewards}
+          onSelect={handleRewardSelect}
+          onClose={() => setOverlayType('none')}
+        />
+      )}
+
+      {/* 事件界面 */}
+      {overlayType === 'event' && currentEvent && (
+        <EventView
+          event={currentEvent}
+          onChoice={handleEventChoice}
+        />
+      )}
     </div>
   )
 }

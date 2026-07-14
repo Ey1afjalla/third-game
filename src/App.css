@@ -66,12 +66,12 @@
   margin: var(--spacing-xs) 0;
 }
 
-.dungeon-container {
+.combat-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
 }
 
-.dungeon-header {
+.back-button {
   margin-bottom: var(--spacing-md);
 }
 
