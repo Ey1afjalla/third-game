@@ -89,10 +89,11 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
         console.log('[DungeonView] 触发战斗:', node.type)
         // 触发战斗回调
         if (onStartCombat) {
+          console.log('[DungeonView] 调用onStartCombat回调')
           onStartCombat()
         } else {
-          // 如果没有回调，直接显示奖励（测试用）
-          handleBattleReward(node.type === 'elite')
+          console.log('[DungeonView] 没有onStartCombat回调，显示提示')
+          alert('战斗功能：需要从App.tsx传入onStartCombat回调')
         }
         break
       case 'event':
