@@ -28,29 +28,31 @@ const NODE_NAMES: Record<NodeType, string> = {
   rest: '休息',
 }
 
-type OverlayType = 'none' | 'reward' | 'event' | 'shop'
+interface DungeonViewProps {
+  showRewardAfterCombat?: boolean
+  onRewardHandled?: () => void
+  onStartCombat?: () => void
+}
 
-export const DungeonView: React.FC = () => {
+export const DungeonView: React.FC<DungeonViewProps> = ({
+  showRewardAfterCombat = false,
+  onRewardHandled,
+  onStartCombat
+}) => {
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [path, setPath] = useState<DungeonPath | null>(null)
   const [overlayType, setOverlayType] = useState<OverlayType>('none')
   const [currentRewards, setCurrentRewards] = useState<Reward[]>([])
   const [currentEvent, setCurrentEvent] = useState<RandomEvent | null>(null)
 
+  // 如果战斗结束后需要显示奖励
   React.useEffect(() => {
-    // 尝试加载存档
-    let state = GameState.loadFromLocalStorage()
-
-    // 如果没有存档，创建新游戏
-    if (!state) {
-      const team = createDefaultTeam()
-      state = new GameState(team)
-      state.saveToLocalStorage()
+    if (showRewardAfterCombat && onRewardHandled) {
+      // 自动触发奖励选择
+      handleBattleReward(false)
+      onRewardHandled()
     }
-
-    setGameState(state)
-    setPath(state.getSave().dungeonPath)
-  }, [])
+  }, [showRewardAfterCombat])
 
   const handleNodeClick = (node: DungeonNode) => {
     // 允许点击current和available状态的节点
@@ -73,7 +75,13 @@ export const DungeonView: React.FC = () => {
       case 'battle':
       case 'elite':
         console.log('[DungeonView] 触发战斗:', node.type)
-        handleBattleReward(node.type === 'elite')
+        // 触发战斗回调
+        if (onStartCombat) {
+          onStartCombat()
+        } else {
+          // 如果没有回调，直接显示奖励（测试用）
+          handleBattleReward(node.type === 'elite')
+        }
         break
       case 'event':
         console.log('[DungeonView] 触发事件')

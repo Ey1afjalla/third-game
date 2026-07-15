@@ -2,9 +2,22 @@ import { useState } from 'react'
 import './App.css'
 import { CombatView } from './views/CombatView'
 import { DungeonView } from './views/DungeonView'
+import type { CombatResult } from './types'
 
 function App() {
   const [gameState, setGameState] = useState<'menu' | 'combat' | 'dungeon'>('menu')
+  const [showRewardAfterCombat, setShowRewardAfterCombat] = useState(false)
+  const [combatResult, setCombatResult] = useState<CombatResult | null>(null)
+
+  const handleCombatComplete = (result: CombatResult) => {
+    console.log('[App] Combat completed:', result.victory ? 'Victory' : 'Defeat')
+    setCombatResult(result)
+    setShowRewardAfterCombat(true)
+    // 如果胜利，显示奖励；如果失败，返回地下城
+    if (result.victory) {
+      setGameState('dungeon')
+    }
+  }
 
   return (
     <div className="app">
@@ -50,7 +63,11 @@ function App() {
             <button onClick={() => setGameState('menu')} className="back-button">
               ← 返回主菜单
             </button>
-            <DungeonView />
+            <DungeonView
+              showRewardAfterCombat={showRewardAfterCombat}
+              onRewardHandled={() => setShowRewardAfterCombat(false)}
+              onStartCombat={() => setGameState('combat')}
+            />
           </div>
         )}
 
@@ -59,7 +76,7 @@ function App() {
             <button onClick={() => setGameState('menu')} className="back-button">
               ← 返回主菜单
             </button>
-            <CombatView />
+            <CombatView onCombatComplete={handleCombatComplete} />
           </div>
         )}
       </main>
