@@ -92,10 +92,4 @@ npm run build
 
 详见 [ChangeLog.md](./docs/ChangeLog.md)
 
-## 📄 许可
-
-本项目为个人学习作品。
-
-## 🔗 仓库
-
-[https://github.com/Ey1afjalla/third-game.git](https://github.com/Ey1afjalla/third-game.git)
+作者：赵秋阳
