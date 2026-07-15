@@ -49,6 +49,11 @@ function App() {
               >
                 展示模式
               </button>
+              <button
+                onClick={() => setGameState('tuning')}
+              >
+                调参面板
+              </button>
               <button disabled>
                 继续游戏（开发中）
               </button>
@@ -86,6 +91,23 @@ function App() {
             <CombatView onCombatComplete={handleCombatComplete} />
           </div>
         )}
+        {gameState === 'showcase' && (
+          <div className="showcase-container">
+            <button onClick={() => setGameState('menu')} className="back-button">
+              ← 返回主菜单
+            </button>
+            <ShowcaseView />
+          </div>
+        )}
+
+        {gameState === 'tuning' && (
+          <div className="tuning-container">
+            <button onClick={() => setGameState('menu')} className="back-button">
+              ← 返回主菜单
+            </button>
+            <TuningPanel />
+          </div>
+        )}
       </main>
 
       <footer className="app-footer">
@@ -93,6 +115,7 @@ function App() {
       </footer>
     </div>
   )
+}
 }
 
 export default App
