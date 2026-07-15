@@ -60,6 +60,7 @@ export class EventGenerator {
             text: '花费50金币购买遗物',
             outcome: {
               type: 'reward',
+              goldCost: 50,
               reward: {
                 type: 'relic',
               },
@@ -71,6 +72,7 @@ export class EventGenerator {
             text: '花费30金币购买药水',
             outcome: {
               type: 'heal',
+              goldCost: 30,
               heal: 50,
               description: '全队恢复50点生命',
             },

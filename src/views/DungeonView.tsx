@@ -58,6 +58,7 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
   const [currentRewards, setCurrentRewards] = useState<Reward[]>([])
   const [currentEvent, setCurrentEvent] = useState<RandomEvent | null>(null)
   const [guideNodeId, setGuideNodeId] = useState<string | null>(null)
+  const [, setSaveVersion] = useState(0)
 
   useEffect(() => {
     let state = GameState.loadFromLocalStorage()
@@ -120,8 +121,9 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
     if (!gameState) return
 
     const nextPath = gameState.getSave().dungeonPath
-    setPath(nextPath)
+    setPath({ ...nextPath, nodes: [...nextPath.nodes] })
     setGuideNodeId(nextPath.currentNodeId)
+    setSaveVersion(version => version + 1)
   }
 
   const handleNodeClick = (node: DungeonNode) => {
@@ -178,6 +180,11 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
 
     const outcome = choice.outcome
 
+    if (outcome.goldCost && !gameState.spendGold(outcome.goldCost)) {
+      alert('金币不足。')
+      return
+    }
+
     if (outcome.damage) gameState.damageTeam(outcome.damage)
     if (outcome.heal) gameState.healTeam(outcome.heal)
     if (outcome.reward?.type === 'gold' && outcome.reward.amount) {
@@ -220,12 +227,12 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
     setOverlayType('none')
   }
 
-  const handleShopPurchase = (item: any) => {
-    if (!gameState) return
+  const handleShopPurchase = (item: any): boolean => {
+    if (!gameState) return false
 
     if (!gameState.spendGold(item.price)) {
       alert('金币不足。')
-      return
+      return false
     }
 
     if (item.type === 'equipment' && item.item) {
@@ -238,6 +245,7 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
 
     gameState.saveToLocalStorage()
     refreshPath()
+    return true
   }
 
   const handleShopClose = () => {
@@ -346,7 +354,11 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
       )}
 
       {overlayType === 'event' && currentEvent && (
-        <EventView event={currentEvent} onChoice={handleEventChoice} />
+        <EventView
+          event={currentEvent}
+          currentGold={gameState.getSave().gold}
+          onChoice={handleEventChoice}
+        />
       )}
     </div>
   )

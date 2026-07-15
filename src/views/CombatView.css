@@ -22,7 +22,9 @@
 
 /* 战斗控制 */
 .combat-controls {
-  background-color: var(--color-bg-secondary);
+  background:
+    linear-gradient(180deg, rgba(224, 184, 79, 0.08), transparent),
+    var(--color-bg-panel);
   position: sticky;
   top: var(--spacing-md);
 }
@@ -56,6 +58,16 @@
   gap: var(--spacing-lg);
   align-items: start;
   min-height: 300px;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at 24% 50%, rgba(94, 168, 255, 0.12), transparent 28%),
+    radial-gradient(circle at 76% 50%, rgba(220, 89, 78, 0.12), transparent 28%),
+    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px),
+    rgba(7, 8, 11, 0.34);
+  background-size: auto, auto, 44px 44px, 44px 44px, auto;
+  border: var(--border-primary);
 }
 
 .team-section {
@@ -70,6 +82,7 @@
   color: var(--color-accent-gold);
   text-align: center;
   margin-bottom: var(--spacing-sm);
+  text-shadow: 0 0 14px rgba(224, 184, 79, 0.16);
 }
 
 .units-grid {
@@ -85,24 +98,39 @@
   font-size: 32px;
   font-weight: 700;
   color: var(--color-accent-red);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 0 18px rgba(220, 89, 78, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.6);
+  align-self: center;
 }
 
 /* 单位卡片 */
 .unit-card {
-  background-color: var(--color-bg-secondary);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent),
+    var(--color-bg-panel);
   border: 2px solid var(--color-bg-tertiary);
   border-radius: var(--radius-sm);
   padding: var(--spacing-sm);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.unit-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.11), transparent 32%);
 }
 
 .unit-card.player {
   border-color: var(--color-accent-blue);
+  box-shadow: inset 4px 0 0 rgba(94, 168, 255, 0.42);
 }
 
 .unit-card.enemy {
   border-color: var(--color-accent-red);
+  box-shadow: inset 4px 0 0 rgba(220, 89, 78, 0.42);
 }
 
 .unit-card.dead {
@@ -122,6 +150,7 @@
   margin-bottom: var(--spacing-sm);
   padding-bottom: var(--spacing-xs);
   border-bottom: var(--border-primary);
+  position: relative;
 }
 
 .unit-name {
@@ -134,7 +163,7 @@
 .unit-role {
   font-size: 11px;
   padding: 2px 6px;
-  background-color: var(--color-bg-tertiary);
+  background-color: rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
 }
@@ -170,9 +199,10 @@
   flex: 1;
   margin-left: var(--spacing-sm);
   height: 16px;
-  background-color: var(--color-bg-primary);
+  background-color: rgba(0, 0, 0, 0.42);
   border-radius: var(--radius-sm);
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .hp-fill {
@@ -180,8 +210,9 @@
   left: 0;
   top: 0;
   height: 100%;
-  background: linear-gradient(90deg, var(--color-hp) 0%, #ff6b6b 100%);
+  background: linear-gradient(90deg, #a8272b 0%, var(--color-hp) 64%, #ff9a8e 100%);
   transition: width 0.3s ease;
+  box-shadow: 0 0 14px rgba(240, 82, 82, 0.34);
 }
 
 .hp-text {
@@ -209,9 +240,12 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-xs);
-  background-color: var(--color-bg-primary);
+  background:
+    linear-gradient(90deg, rgba(224, 184, 79, 0.06), transparent),
+    rgba(0, 0, 0, 0.22);
   border-radius: var(--radius-sm);
   font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .skill-name {
@@ -261,6 +295,9 @@
 .combat-log {
   max-height: 200px;
   overflow-y: auto;
+  background:
+    linear-gradient(180deg, rgba(94, 168, 255, 0.06), transparent),
+    var(--color-bg-panel);
 }
 
 .log-content {
@@ -273,10 +310,11 @@
   display: flex;
   gap: var(--spacing-sm);
   padding: var(--spacing-xs);
-  background-color: var(--color-bg-primary);
+  background-color: rgba(0, 0, 0, 0.24);
   border-radius: var(--radius-sm);
   font-size: 13px;
   transition: background-color 0.2s ease;
+  border-left: 2px solid rgba(224, 184, 79, 0.22);
 }
 
 .log-entry:hover {
@@ -295,7 +333,9 @@
 
 /* 战斗结果 */
 .combat-result {
-  background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(224, 184, 79, 0.18), transparent 28%),
+    linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
   border: 2px solid var(--color-accent-gold);
 }
 

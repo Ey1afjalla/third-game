@@ -1,95 +1,80 @@
-# ⚔️ 迷你地下城指挥官
+# 迷你地下城指挥官
 
-**Mini Dungeon Commander** - 战术自动战斗 Roguelike 游戏
+**Mini Dungeon Commander v1.0.0** 是一款本地单机战术自动战斗 Roguelike 游戏。
 
-## 📖 项目简介
+玩家指挥三人冒险小队，在随机地下城路线中选择战斗、事件、商店和休息节点，通过装备、遗物、金币和随机事件构筑队伍，最终挑战 Boss。
 
-玩家指挥一支三人冒险小队，在不断变化的地下城路线中自动战斗、收集遗物、强化技能，并通过战斗复盘理解每一场胜负背后的系统逻辑。
+## 核心特色
 
-## 🎮 核心特色
+- 完整单局流程：开始冒险、路线选择、自动战斗、奖励、事件、商店、Boss 节点。
+- 可解释战斗：状态机、敌人行为树、技能冷却、伤害公式和战斗日志可在展示模式查看。
+- Roguelike 构筑：装备、遗物、金币、治疗和随机事件会影响每一局选择。
+- 最终版美术：主菜单、地下城、战斗、奖励、事件、商店、展示模式和调参面板统一为地下城战术桌面风格。
+- 本地运行：无需后端、无需联网，存档使用浏览器 localStorage。
 
-- ⚔️ **完整的自动战斗循环**：从小队配置到战斗执行，形成完整单局体验
-- 🧠 **可解释的战斗系统**：状态机、行为树、技能冷却，所有逻辑可追踪
-- 🎲 **Roguelike 构筑深度**：装备、遗物、技能强化影响每一局策略
-- 🏰 **统一的地下城主题**：UI 和视觉围绕"地下城战术指挥"主题设计
-- 💾 **本地单机游戏**：无需联网，完全本地运行
-
-## 🚀 快速开始
-
-### 开发环境要求
-
-- Node.js 18+
-- npm 或 yarn
-
-### 安装依赖
+## 快速开始
 
 ```bash
 npm install
-```
-
-### 运行开发服务器
-
-```bash
 npm run dev
 ```
 
-访问 `http://localhost:3000` 查看游戏。
+打开本地地址：
 
-### 构建生产版本
+```text
+http://localhost:3000
+```
+
+如果 Vite 自动换端口，请以终端显示的地址为准。
+
+## 构建发布包
 
 ```bash
 npm run build
 ```
 
-## 📚 文档
+构建产物位于 `dist/`。v1.0.0 的 GitHub Release 附件使用 Web 静态包：
 
-- [需求文档](./RequirementsDoc.md)
-- [开发规范](./CLAUDE.md)
-- [架构设计](./docs/Architecture.md)
-- [开发日志](./docs/DevelopmentLog.md)
-- [版本记录](./docs/ChangeLog.md)
-- [任务看板](./docs/TaskBoard.md)
+```text
+release/mini-dungeon-commander-v1.0.0-web.zip
+```
 
-更多文档正在完善中...
+解压后可用任意静态服务器打开，例如：
 
-## 🛠️ 技术栈
+```bash
+npx serve dist
+```
 
-- **前端框架**：React 18
-- **开发语言**：TypeScript
-- **构建工具**：Vite
-- **桌面封装**：Tauri（计划中）
-
-## 📋 开发阶段
+## 开发阶段
 
 - [x] 阶段 0：项目初始化
-- [ ] 阶段 1：可玩 MVP（单场战斗）
-- [ ] 阶段 2：战斗系统完整化
-- [ ] 阶段 3：Roguelike 构筑
-- [ ] 阶段 4：展示模式和调参面板
-- [ ] 阶段 5：美术、文档和最终交付
+- [x] 阶段 1：可玩 MVP
+- [x] 阶段 2：战斗系统完整化
+- [x] 阶段 3：Roguelike 构筑
+- [x] 阶段 4：展示模式和调参面板
+- [x] 阶段 5：美术、文档和最终交付
 
-## 🎯 当前状态
+## 文档
 
-**版本**：v0.2.0  
-**状态**：阶段2完成 - 战斗系统完整化  
-**最后更新**：2026-07-15
+- [需求文档](./RequirementsDoc.md)
+- [架构设计](./docs/Architecture.md)
+- [战斗系统设计](./docs/CombatSystemDesign.md)
+- [AI 行为设计](./docs/AIBehaviorDesign.md)
+- [数值设计](./docs/BalanceDesign.md)
+- [开发日志](./docs/DevelopmentLog.md)
+- [版本记录](./docs/ChangeLog.md)
+- [QA 报告](./docs/QAReport.md)
+- [发布清单](./docs/ReleaseChecklist.md)
 
-## 📋 版本历史
+## 技术栈
 
-- **v0.2.0** (2026-07-15) - 战斗系统完整化
-  - 状态机系统
-  - 行为树AI
-  - Buff/Debuff框架
-  - 数值平衡优化
-  - UI布局优化
-- **v0.1.0** (2026-07-15) - 可玩MVP
-  - 基础战斗系统
-  - 3个玩家角色
-  - 3种敌人
-  - 自动战斗功能
+- React 18
+- TypeScript
+- Vite
+- localStorage 本地存档
 
-## 📝 版本记录
+## 当前发布说明
 
-详见 [ChangeLog.md](./docs/ChangeLog.md)
+当前版本为 **v1.0.0 最终 Web 版**。项目尚未包含 `src-tauri` 桌面封装配置，因此本次 Release 提供静态网页包，而不是桌面安装包。
 
 作者：赵秋阳

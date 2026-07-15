@@ -99,6 +99,7 @@ export interface EventOutcome {
   reward?: Reward
   damage?: number
   heal?: number
+  goldCost?: number
   buff?: string
   description: string
 }

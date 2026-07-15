@@ -2,30 +2,36 @@
 
 :root {
   /* 主色调 - 地下城氛围 */
-  --color-bg-primary: #1a1a1a;
-  --color-bg-secondary: #2a2a2a;
-  --color-bg-tertiary: #3a3a3a;
+  --color-bg-primary: #101116;
+  --color-bg-secondary: #1b1d25;
+  --color-bg-tertiary: #2b2e39;
+  --color-bg-panel: rgba(28, 30, 38, 0.92);
+  --color-bg-glass: rgba(255, 255, 255, 0.045);
 
-  --color-text-primary: #e0e0e0;
-  --color-text-secondary: #b0b0b0;
-  --color-text-tertiary: #808080;
+  --color-text-primary: #f4ead7;
+  --color-text-secondary: #c7bda8;
+  --color-text-tertiary: #8e887d;
 
-  --color-accent-gold: #d4af37;
-  --color-accent-red: #c53030;
-  --color-accent-blue: #4299e1;
-  --color-accent-green: #38a169;
+  --color-accent-gold: #e0b84f;
+  --color-accent-red: #dc594e;
+  --color-accent-blue: #5ea8ff;
+  --color-accent-green: #58c98d;
+  --color-accent-purple: #a875ff;
+  --color-accent-cyan: #65d8e6;
+  --color-accent-ember: #ff8a3d;
 
   /* 战斗状态色 */
-  --color-hp: #e53e3e;
-  --color-shield: #4299e1;
-  --color-buff: #38a169;
-  --color-debuff: #d69e2e;
+  --color-hp: #f05252;
+  --color-shield: #5ea8ff;
+  --color-buff: #58c98d;
+  --color-debuff: #f1a73c;
 
   /* 边框和阴影 */
-  --border-primary: 1px solid #4a4a4a;
+  --border-primary: 1px solid rgba(255, 255, 255, 0.12);
   --border-highlight: 1px solid var(--color-accent-gold);
-  --shadow-default: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-default: 0 14px 36px rgba(0, 0, 0, 0.34);
+  --shadow-hover: 0 18px 46px rgba(0, 0, 0, 0.48), 0 0 28px rgba(224, 184, 79, 0.12);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.5);
 
   /* 字体 */
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -41,9 +47,9 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
 
-  --radius-sm: 4px;
+  --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-lg: 10px;
 }
 
 * {
@@ -59,9 +65,26 @@ html, body, #root {
 }
 
 body {
-  background-color: var(--color-bg-primary);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(224, 184, 79, 0.16), transparent 24%),
+    radial-gradient(circle at 88% 18%, rgba(94, 168, 255, 0.14), transparent 28%),
+    radial-gradient(circle at 50% 110%, rgba(220, 89, 78, 0.12), transparent 34%),
+    linear-gradient(180deg, #171820 0%, #0c0d12 62%, #08090c 100%);
   color: var(--color-text-primary);
   line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent 78%);
 }
 
 /* 滚动条样式 */
@@ -85,7 +108,9 @@ body {
 
 /* 通用按钮样式 */
 button {
-  background-color: var(--color-bg-tertiary);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent),
+    var(--color-bg-tertiary);
   color: var(--color-text-primary);
   border: var(--border-primary);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -97,7 +122,9 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background-color: #4a4a4a;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent),
+    #353946;
   border-color: var(--color-accent-gold);
   box-shadow: var(--shadow-hover);
 }
@@ -112,13 +139,18 @@ button:disabled {
 }
 
 button.primary {
-  background-color: var(--color-accent-gold);
-  color: #1a1a1a;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0)),
+    linear-gradient(135deg, #f1cf6c, var(--color-accent-gold) 54%, #9d6f1f);
+  color: #21180b;
   border-color: var(--color-accent-gold);
+  box-shadow: 0 8px 26px rgba(224, 184, 79, 0.24);
 }
 
 button.primary:hover:not(:disabled) {
-  background-color: #e5c158;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0)),
+    linear-gradient(135deg, #ffe08d, #e0b84f 54%, #b47e22);
 }
 
 button.danger {
@@ -147,11 +179,15 @@ input:focus, select:focus, textarea:focus {
 
 /* 通用面板样式 */
 .panel {
-  background-color: var(--color-bg-secondary);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)),
+    var(--color-bg-panel);
   border: var(--border-primary);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   box-shadow: var(--shadow-default);
+  box-shadow: var(--shadow-default), var(--shadow-inset);
+  backdrop-filter: blur(10px);
 }
 
 .panel-header {
@@ -161,6 +197,7 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: var(--spacing-md);
   padding-bottom: var(--spacing-sm);
   border-bottom: var(--border-primary);
+  letter-spacing: 0;
 }
 
 /* 实用类 */

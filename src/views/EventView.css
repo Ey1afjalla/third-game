@@ -5,7 +5,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
+  background:
+    radial-gradient(circle at 50% 14%, rgba(94, 168, 255, 0.16), transparent 34%),
+    rgba(0, 0, 0, 0.86);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,8 +38,11 @@
   text-align: center;
   margin-bottom: var(--spacing-lg);
   padding: var(--spacing-md);
-  background-color: var(--color-bg-primary);
+  background:
+    linear-gradient(90deg, rgba(94, 168, 255, 0.07), transparent),
+    var(--color-bg-primary);
   border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .event-choices {
@@ -47,24 +52,38 @@
 }
 
 .event-choice {
-  background-color: var(--color-bg-primary);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent),
+    var(--color-bg-primary);
   border: 2px solid var(--color-bg-tertiary);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
+  color: inherit;
+  font: inherit;
+  width: 100%;
 }
 
-.event-choice:hover {
+.event-choice:hover:not(:disabled) {
   border-color: var(--color-accent-blue);
   transform: translateX(8px);
   box-shadow: var(--shadow-hover);
 }
 
+.event-choice:disabled {
+  cursor: not-allowed;
+}
+
+.event-choice.locked {
+  opacity: 0.55;
+}
+
 .event-choice.selected {
   border-color: var(--color-accent-gold);
   background-color: rgba(245, 158, 11, 0.1);
+  opacity: 1;
 }
 
 .choice-text {
@@ -80,6 +99,60 @@
   line-height: 1.4;
 }
 
+.event-result {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(224, 184, 79, 0.12), transparent 30%),
+    var(--color-bg-primary);
+  border: 1px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.event-result-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-accent-gold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.event-result-description {
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-md);
+}
+
+.event-feedback-list {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.feedback-item {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border-left: 4px solid var(--color-text-secondary);
+}
+
+.feedback-item.gain {
+  border-left-color: var(--color-accent-green);
+}
+
+.feedback-item.loss {
+  border-left-color: var(--color-accent-red);
+}
+
+.feedback-item.neutral {
+  color: var(--color-text-secondary);
+}
+
+.event-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-md);
+}
+
 /* 响应式 */
 @media (max-width: 600px) {
   .event-title {
@@ -92,5 +165,9 @@
 
   .choice-text {
     font-size: 14px;
+  }
+
+  .event-actions .btn {
+    width: 100%;
   }
 }

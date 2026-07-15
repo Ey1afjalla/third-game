@@ -3,23 +3,43 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+  background:
+    radial-gradient(circle at 18% 22%, rgba(224, 184, 79, 0.13), transparent 24%),
+    radial-gradient(circle at 82% 10%, rgba(94, 168, 255, 0.11), transparent 28%),
+    linear-gradient(180deg, rgba(17, 18, 25, 0.72), rgba(8, 9, 12, 0.96));
+  position: relative;
+  overflow: hidden;
+}
+
+.app::before {
+  content: '';
+  position: absolute;
+  inset: 96px 0 64px;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 0 12%, rgba(255, 255, 255, 0.035) 12% 12.4%, transparent 12.4% 34%, rgba(255, 255, 255, 0.025) 34% 34.4%, transparent 34.4%),
+    radial-gradient(circle at 50% 5%, rgba(224, 184, 79, 0.12), transparent 38%);
+  opacity: 0.95;
 }
 
 .app-header {
-  background-color: var(--color-bg-secondary);
+  position: relative;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, transparent, rgba(224, 184, 79, 0.12), transparent),
+    rgba(16, 17, 22, 0.88);
   border-bottom: 2px solid var(--color-accent-gold);
-  padding: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
   text-align: center;
-  box-shadow: var(--shadow-default);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.34);
 }
 
 .app-header h1 {
-  font-size: 24px;
+  font-size: clamp(24px, 3vw, 34px);
   font-weight: 700;
   color: var(--color-accent-gold);
   margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 0 18px rgba(224, 184, 79, 0.26), 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .subtitle {
@@ -30,6 +50,8 @@
 }
 
 .app-main {
+  position: relative;
+  z-index: 1;
   flex: 1;
   padding: var(--spacing-md);
   overflow-y: auto;
@@ -39,8 +61,25 @@
 }
 
 .main-menu {
-  max-width: 400px;
+  max-width: 460px;
   width: 100%;
+  margin-top: var(--spacing-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.main-menu::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(224, 184, 79, 0.16), transparent 22%),
+    radial-gradient(circle at 90% 80%, rgba(94, 168, 255, 0.1), transparent 26%);
+}
+
+.main-menu > * {
+  position: relative;
 }
 
 .menu-buttons {
@@ -51,6 +90,24 @@
   width: 100%;
   padding: var(--spacing-md);
   font-size: 16px;
+  min-height: 58px;
+  border-radius: var(--radius-md);
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-buttons button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  transform: translateX(-110%);
+  transition: transform 0.45s ease;
+}
+
+.menu-buttons button:hover::after {
+  transform: translateX(110%);
 }
 
 .version-info {
@@ -60,6 +117,9 @@
   text-align: center;
   font-size: 12px;
   color: var(--color-text-tertiary);
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md);
 }
 
 .version-info p {
@@ -73,10 +133,11 @@
 
 .back-button {
   margin-bottom: var(--spacing-md);
+  border-color: rgba(224, 184, 79, 0.38);
 }
 
 .team-status {
-  background-color: var(--color-bg-secondary);
+  background: var(--color-bg-panel);
 }
 
 .team-grid {
@@ -87,7 +148,10 @@
 }
 
 .team-member {
-  background-color: var(--color-bg-primary);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent),
+    var(--color-bg-primary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: var(--spacing-sm);
   border-radius: var(--radius-sm);
   text-align: center;
@@ -109,7 +173,9 @@
 }
 
 .app-footer {
-  background-color: var(--color-bg-secondary);
+  position: relative;
+  z-index: 1;
+  background-color: rgba(16, 17, 22, 0.9);
   border-top: var(--border-primary);
   padding: var(--spacing-md);
   text-align: center;

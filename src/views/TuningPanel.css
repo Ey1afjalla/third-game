@@ -3,9 +3,14 @@
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-  background-color: var(--color-bg-secondary);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(94, 168, 255, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent),
+    var(--color-bg-panel);
   border-radius: var(--radius-md);
   padding: var(--spacing-lg);
+  border: var(--border-primary);
+  box-shadow: var(--shadow-default);
 }
 
 /* 标签栏 */
@@ -31,13 +36,13 @@
 
 .tab-bar button:hover {
   color: var(--color-text-primary);
-  background-color: var(--color-bg-primary);
+  background-color: rgba(255, 255, 255, 0.055);
 }
 
 .tab-bar button.active {
   color: var(--color-accent-gold);
   border-bottom-color: var(--color-accent-gold);
-  background-color: var(--color-bg-primary);
+  background-color: rgba(224, 184, 79, 0.1);
 }
 
 /* 内容区 */
@@ -63,6 +68,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .param-item label {
