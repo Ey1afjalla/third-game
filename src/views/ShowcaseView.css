@@ -1,0 +1,292 @@
+/* 展示模式界面 */
+.showcase-view {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* 控制栏 */
+.control-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.speed-control button {
+  min-width: 60px;
+}
+
+.speed-control button.active {
+  background-color: var(--color-accent-gold);
+  color: var(--color-bg-primary);
+}
+
+.turn-info {
+  margin-left: auto;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* 内容区 */
+.showcase-content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--spacing-md);
+  min-height: 600px;
+}
+
+/* 战斗显示 */
+.combat-display {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+}
+
+.team-section {
+  flex: 1;
+}
+
+.team-section h3 {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+/* 单位卡片 */
+.unit-card {
+  background-color: var(--color-bg-primary);
+  border: 2px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.unit-card:hover {
+  border-color: var(--color-accent-blue);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.unit-card.selected {
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 0 15px var(--color-accent-gold);
+}
+
+.unit-card.enemy {
+  border-color: var(--color-accent-red);
+}
+
+.unit-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.unit-state {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* HP条 */
+.hp-bar {
+  position: relative;
+  height: 24px;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: var(--spacing-sm);
+}
+
+.hp-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent-green), var(--color-accent-blue));
+  transition: width 0.3s ease;
+}
+
+.hp-bar span {
+  position: relative;
+  display: block;
+  text-align: center;
+  line-height: 24px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 0 2px black;
+  z-index: 1;
+}
+
+/* Buffs */
+.buffs {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.buff-icon {
+  font-size: 16px;
+}
+
+/* 信息面板 */
+.info-panel {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  max-height: 700px;
+}
+
+/* 日志区 */
+.log-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.log-section h4 {
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.log-list {
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm);
+}
+
+.log-entry {
+  padding: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-bg-tertiary);
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-turn {
+  color: var(--color-accent-gold);
+  font-weight: 600;
+  margin-right: var(--spacing-xs);
+}
+
+.log-details {
+  color: var(--color-text-secondary);
+}
+
+/* 单位详情 */
+.unit-details {
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md);
+}
+
+.unit-details h4 {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+.unit-details h5 {
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-xs) 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--color-bg-tertiary);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row span:first-child {
+  color: var(--color-text-secondary);
+}
+
+.detail-row span:last-child {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* 技能信息 */
+.skill-info {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.buff-info {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+/* 响应式 */
+@media (max-width: 1400px) {
+  .showcase-content {
+    grid-template-columns: 1fr;
+  }
+
+  .info-panel {
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 900px) {
+  .units-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .control-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .turn-info {
+    margin-left: 0;
+    text-align: center;
+  }
+}

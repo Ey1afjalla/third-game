@@ -2,10 +2,11 @@ import { useState } from 'react'
 import './App.css'
 import { CombatView } from './views/CombatView'
 import { DungeonView } from './views/DungeonView'
+import { ShowcaseView } from './views/ShowcaseView'
 import type { CombatResult } from './types'
 
 function App() {
-  const [gameState, setGameState] = useState<'menu' | 'combat' | 'dungeon'>('menu')
+  const [gameState, setGameState] = useState<'menu' | 'combat' | 'dungeon' | 'showcase'>('menu')
   const [showRewardAfterCombat, setShowRewardAfterCombat] = useState(false)
   const [combatResult, setCombatResult] = useState<CombatResult | null>(null)
 
@@ -41,6 +42,11 @@ function App() {
                 onClick={() => setGameState('combat')}
               >
                 快速战斗（测试）
+              </button>
+              <button
+                onClick={() => setGameState('showcase')}
+              >
+                展示模式
               </button>
               <button disabled>
                 继续游戏（开发中）
