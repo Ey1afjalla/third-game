@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { CombatEngine } from '../engine/CombatEngine'
 import { createDefaultTeam } from '../data/characters'
-import { createEnemies } from '../data/enemies'
+import { createBasicEnemyGroup } from '../data/enemies'
 import type { Unit, CombatLogEntry } from '../types'
 import './ShowcaseView.css'
 
@@ -16,7 +16,7 @@ export const ShowcaseView: React.FC = () => {
   // 初始化战斗
   useEffect(() => {
     const team = createDefaultTeam()
-    const enemies = createEnemies(3)
+    const enemies = createBasicEnemyGroup()
     const combatEngine = new CombatEngine(team, enemies)
     setEngine(combatEngine)
   }, [])
@@ -50,7 +50,7 @@ export const ShowcaseView: React.FC = () => {
 
   const handleReset = () => {
     const team = createDefaultTeam()
-    const enemies = createEnemies(3)
+    const enemies = createBasicEnemyGroup()
     const combatEngine = new CombatEngine(team, enemies)
     setEngine(combatEngine)
     setIsPlaying(false)
