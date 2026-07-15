@@ -21,7 +21,7 @@ const getRewardText = (choice: EventChoice): string => {
   if (reward.type === 'equipment') return '获得装备'
   if (reward.type === 'relic') return '获得遗物'
   if (reward.type === 'upgrade') return '获得强化'
-  if (reward.type === 'heal') return `全队生命 +${reward.amount ?? 0}`
+  if (reward.type === 'heal') return `全队生命上限 +${reward.amount ?? 0}`
 
   return '获得奖励'
 }
@@ -32,7 +32,7 @@ const buildFeedback = (choice: EventChoice): FeedbackItem[] => {
 
   if (outcome.goldCost) items.push({ type: 'loss', text: `金币 -${outcome.goldCost}` })
   if (outcome.damage) items.push({ type: 'loss', text: `全队生命 -${outcome.damage}` })
-  if (outcome.heal) items.push({ type: 'gain', text: `全队生命 +${outcome.heal}` })
+  if (outcome.heal) items.push({ type: 'gain', text: `全队生命上限 +${outcome.heal}` })
 
   const rewardText = getRewardText(choice)
   if (rewardText) items.push({ type: 'gain', text: rewardText })

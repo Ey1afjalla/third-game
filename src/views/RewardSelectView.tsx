@@ -20,7 +20,7 @@ const REWARD_NAMES: Record<string, string> = {
   equipment: '装备',
   relic: '遗物',
   gold: '金币',
-  heal: '治疗',
+  heal: '生命上限',
   upgrade: '升级',
 }
 
@@ -56,7 +56,7 @@ export const RewardSelectView: React.FC<RewardSelectViewProps> = ({ rewards, onS
     } else if (reward.type === 'gold') {
       description = `获得${reward.amount}金币`
     } else if (reward.type === 'heal') {
-      description = `全队恢复${reward.amount}点生命`
+      description = `全队生命上限 +${reward.amount}`
     }
 
     return (

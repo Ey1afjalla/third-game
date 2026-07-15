@@ -30,7 +30,7 @@ export type RewardType = 'equipment' | 'relic' | 'gold' | 'heal' | 'upgrade'
 export interface Reward {
   type: RewardType
   item?: Equipment | Relic
-  amount?: number // 金币数量或治疗量
+  amount?: number // 金币数量或生命上限提升量
 }
 
 // 装备槽位

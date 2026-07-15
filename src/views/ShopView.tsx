@@ -148,7 +148,7 @@ const getItemText = (item: ShopItem): { name: string; description: string } => {
   }
 
   return {
-    name: '治疗药水',
-    description: `恢复全队 ${item.healAmount ?? 0} 点生命`,
+    name: '生命药剂',
+    description: `全队生命上限 +${item.healAmount ?? 0}`,
   }
 }

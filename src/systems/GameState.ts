@@ -129,6 +129,16 @@ export class GameState {
   }
 
   /**
+   * 提升全队生命上限，并补上同等当前生命
+   */
+  increaseTeamMaxHp(amount: number): void {
+    this.save.team.forEach(unit => {
+      unit.stats.maxHp += amount
+      unit.hp = Math.min(unit.hp + amount, unit.stats.maxHp)
+    })
+  }
+
+  /**
    * 伤害队伍
    */
   damageTeam(amount: number): void {

@@ -151,11 +151,11 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
         setOverlayType('shop')
         break
       case 'rest':
-        gameState.healTeam(50)
+        gameState.increaseTeamMaxHp(50)
         gameState.completeCurrentNode()
         gameState.saveToLocalStorage()
         refreshPath()
-        alert('在营地休息，全队恢复 50 点生命。')
+        alert('在营地休息，全队生命上限 +50。')
         break
       case 'boss':
         alert('Boss 战即将开始。')
@@ -186,7 +186,7 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
     }
 
     if (outcome.damage) gameState.damageTeam(outcome.damage)
-    if (outcome.heal) gameState.healTeam(outcome.heal)
+    if (outcome.heal) gameState.increaseTeamMaxHp(outcome.heal)
     if (outcome.reward?.type === 'gold' && outcome.reward.amount) {
       gameState.addGold(outcome.reward.amount)
     } else if (outcome.reward?.type === 'equipment' || outcome.reward?.type === 'relic') {
@@ -218,7 +218,7 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
     } else if (reward.type === 'gold' && reward.amount) {
       gameState.addGold(reward.amount)
     } else if (reward.type === 'heal' && reward.amount) {
-      gameState.healTeam(reward.amount)
+      gameState.increaseTeamMaxHp(reward.amount)
     }
 
     gameState.completeCurrentNode()
@@ -240,7 +240,7 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
     } else if (item.type === 'relic' && item.item) {
       gameState.addRelic(item.item)
     } else if (item.type === 'heal' && item.healAmount) {
-      gameState.healTeam(item.healAmount)
+      gameState.increaseTeamMaxHp(item.healAmount)
     }
 
     gameState.saveToLocalStorage()

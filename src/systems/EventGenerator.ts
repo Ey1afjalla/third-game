@@ -69,12 +69,12 @@ export class EventGenerator {
           },
           {
             id: 'buy_heal',
-            text: '花费30金币购买药水',
+            text: '花费30金币购买生命药剂',
             outcome: {
               type: 'heal',
               goldCost: 30,
               heal: 50,
-              description: '全队恢复50点生命',
+              description: '全队生命上限提升50点',
             },
           },
           {
@@ -103,7 +103,7 @@ export class EventGenerator {
             outcome: {
               type: 'heal',
               heal: 40,
-              description: '泉水恢复了你的伤势（全队+40生命）',
+              description: '泉水强化了你的体魄（全队生命上限+40）',
             },
           },
           {
@@ -177,11 +177,11 @@ export class EventGenerator {
         choices: [
           {
             id: 'rest',
-            text: '休息恢复',
+            text: '休息锻炼',
             outcome: {
               type: 'heal',
               heal: 30,
-              description: '短暂的休息让你恢复了体力（全队+30生命）',
+              description: '短暂的休整让你们状态更稳（全队生命上限+30）',
             },
           },
           {
