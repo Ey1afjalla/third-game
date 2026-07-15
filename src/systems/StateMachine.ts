@@ -15,7 +15,6 @@ export class UnitStateMachine {
       return false
     }
 
-    const oldState = this.unit.state
     this.unit.state = newState
 
     return true

@@ -1,40 +1,31 @@
-import type { DungeonNode, DungeonPath, NodeType, NodeState } from '../types/dungeon'
+import type { DungeonNode, DungeonPath, NodeType } from '../types/dungeon'
 
 export class DungeonGenerator {
-  private readonly FLOORS = 8 // 地下城总层数
-  private readonly NODES_PER_FLOOR = 4 // 每层节点数
-  private readonly BOSS_FLOOR = 8 // Boss层
+  private readonly FLOORS = 8
+  private readonly NODES_PER_FLOOR = 4
+  private readonly BOSS_FLOOR = 8
 
-  /**
-   * 生成完整的地下城路线
-   */
   generateDungeon(): DungeonPath {
     const nodes: DungeonNode[] = []
     let nodeIdCounter = 0
 
-    // 生成每一层
     for (let floor = 0; floor < this.FLOORS; floor++) {
       const nodeCount = floor === 0 ? 1 : this.NODES_PER_FLOOR
-      const floorNodes: DungeonNode[] = []
 
-      // 生成该层的节点
       for (let i = 0; i < nodeCount; i++) {
-        const node: DungeonNode = {
+        nodes.push({
           id: `node_${nodeIdCounter++}`,
           type: this.getNodeType(floor),
           state: floor === 0 ? 'available' : 'locked',
           x: i,
           y: floor,
           connections: [],
-        }
-        floorNodes.push(node)
-        nodes.push(node)
+        })
       }
+    }
 
-      // 连接到下一层
-      if (floor < this.FLOORS - 1) {
-        this.connectToNextFloor(floorNodes, nodes, floor)
-      }
+    for (let floor = 0; floor < this.FLOORS - 1; floor++) {
+      this.connectFloor(nodes, floor)
     }
 
     return {
@@ -45,45 +36,38 @@ export class DungeonGenerator {
     }
   }
 
-  /**
-   * 根据层数决定节点类型
-   */
   private getNodeType(floor: number): NodeType {
-    if (floor === 0) return 'battle' // 第一层总是战斗
-    if (floor === this.BOSS_FLOOR - 1) return 'boss' // 最后一层是Boss
+    if (floor === 0) return 'battle'
+    if (floor === this.BOSS_FLOOR - 1) return 'boss'
 
-    // 其他层随机决定
     const roll = Math.random()
 
-    if (roll < 0.5) {
-      return 'battle' // 50% 普通战斗
-    } else if (roll < 0.65) {
-      return 'elite' // 15% 精英战斗
-    } else if (roll < 0.80) {
-      return 'event' // 15% 随机事件
-    } else if (roll < 0.90) {
-      return 'rest' // 10% 休息点
-    } else {
-      return 'shop' // 10% 商店
-    }
+    if (roll < 0.5) return 'battle'
+    if (roll < 0.65) return 'elite'
+    if (roll < 0.80) return 'event'
+    if (roll < 0.90) return 'rest'
+    return 'shop'
   }
 
-  /**
-   * 连接当前层到下一层
-   */
-  private connectToNextFloor(
-    currentFloor: DungeonNode[],
-    allNodes: DungeonNode[],
-    floorIndex: number
-  ): void {
-    const nextFloorNodes = allNodes.filter(n => n.y === floorIndex + 1)
+  private connectFloor(nodes: DungeonNode[], floorIndex: number): void {
+    const currentFloorNodes = nodes.filter(n => n.y === floorIndex)
+    const nextFloorNodes = nodes.filter(n => n.y === floorIndex + 1)
 
-    currentFloor.forEach(node => {
-      // 每个节点连接到下一层的 2-3 个节点
+    if (currentFloorNodes.length === 0 || nextFloorNodes.length === 0) return
+
+    currentFloorNodes.forEach(node => {
+      const existingValidConnections = node.connections.filter(connId =>
+        nextFloorNodes.some(nextNode => nextNode.id === connId)
+      )
+
+      if (existingValidConnections.length > 0) {
+        node.connections = existingValidConnections
+        return
+      }
+
       const connectionCount = Math.random() < 0.5 ? 2 : 3
       const possibleConnections = [...nextFloorNodes]
 
-      // 随机选择连接
       for (let i = 0; i < Math.min(connectionCount, possibleConnections.length); i++) {
         const randomIndex = Math.floor(Math.random() * possibleConnections.length)
         const targetNode = possibleConnections.splice(randomIndex, 1)[0]
@@ -92,18 +76,40 @@ export class DungeonGenerator {
     })
   }
 
-  /**
-   * 完成一个节点
-   */
+  repairDungeon(path: DungeonPath): DungeonPath {
+    for (let floor = 0; floor < path.maxDepth - 1; floor++) {
+      this.connectFloor(path.nodes, floor)
+    }
+
+    const completedNodeIds = new Set([
+      ...path.completedNodes,
+      ...path.nodes.filter(node => node.state === 'completed').map(node => node.id),
+    ])
+
+    path.completedNodes = Array.from(completedNodeIds)
+
+    completedNodeIds.forEach(nodeId => {
+      const node = path.nodes.find(n => n.id === nodeId)
+      node?.connections.forEach(connId => {
+        const connectedNode = path.nodes.find(n => n.id === connId)
+        if (connectedNode && connectedNode.state === 'locked') {
+          connectedNode.state = 'available'
+        }
+      })
+    })
+
+    return path
+  }
+
   completeNode(path: DungeonPath, nodeId: string): DungeonPath {
     const node = path.nodes.find(n => n.id === nodeId)
     if (!node) return path
 
-    // 标记为已完成
     node.state = 'completed'
-    path.completedNodes.push(nodeId)
+    if (!path.completedNodes.includes(nodeId)) {
+      path.completedNodes.push(nodeId)
+    }
 
-    // 解锁连接的节点
     node.connections.forEach(connId => {
       const connNode = path.nodes.find(n => n.id === connId)
       if (connNode && connNode.state === 'locked') {
@@ -114,17 +120,15 @@ export class DungeonGenerator {
     return path
   }
 
-  /**
-   * 选择下一个节点
-   */
   selectNode(path: DungeonPath, nodeId: string): DungeonPath {
     const node = path.nodes.find(n => n.id === nodeId)
     if (!node || node.state !== 'available') return path
 
-    // 更新当前节点
-    if (path.currentNodeId) {
+    if (path.currentNodeId && path.currentNodeId !== nodeId) {
       const prevNode = path.nodes.find(n => n.id === path.currentNodeId)
-      if (prevNode) prevNode.state = 'completed'
+      if (prevNode && prevNode.state === 'current') {
+        prevNode.state = 'completed'
+      }
     }
 
     node.state = 'current'
@@ -133,15 +137,12 @@ export class DungeonGenerator {
     return path
   }
 
-  /**
-   * 获取可选择的下一个节点
-   */
   getAvailableNodes(path: DungeonPath): DungeonNode[] {
     const currentNode = path.nodes.find(n => n.id === path.currentNodeId)
     if (!currentNode) return []
 
     return currentNode.connections
       .map(id => path.nodes.find(n => n.id === id))
-      .filter(n => n && n.state === 'available') as DungeonNode[]
+      .filter((node): node is DungeonNode => !!node && node.state === 'available')
   }
 }

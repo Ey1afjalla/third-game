@@ -14,9 +14,9 @@ function App() {
   const handleCombatComplete = (result: CombatResult) => {
     console.log('[App] Combat completed:', result.victory ? 'Victory' : 'Defeat')
     setCombatResult(result)
-    setShowRewardAfterCombat(true)
     // 如果胜利，显示奖励；如果失败，返回地下城
     if (result.victory) {
+      setShowRewardAfterCombat(true)
       setGameState('dungeon')
     }
   }
@@ -76,6 +76,7 @@ function App() {
               ← 返回主菜单
             </button>
             <DungeonView
+              combatResult={combatResult}
               showRewardAfterCombat={showRewardAfterCombat}
               onRewardHandled={() => setShowRewardAfterCombat(false)}
               onStartCombat={() => setGameState('combat')}

@@ -1,96 +1,104 @@
-import type { Reward, Equipment, Relic, RewardType, EquipmentSlot, Rarity } from '../types/dungeon'
 import type { UnitStats } from '../types'
+import type { Equipment, EquipmentSlot, Rarity, Relic, Reward } from '../types/dungeon'
+import { loadTuningConfig, type TuningConfig } from './TuningConfig'
 
 export class RewardGenerator {
-  /**
-   * 生成战斗后的三选一奖励
-   */
+  private tuningConfig: TuningConfig
+
+  constructor(tuningConfig: TuningConfig = loadTuningConfig()) {
+    this.tuningConfig = tuningConfig
+  }
+
   generateBattleRewards(isElite: boolean = false): Reward[] {
     const rewards: Reward[] = []
+    const minRarity = isElite ? 'rare' : 'common'
 
-    // 奖励1：装备
     rewards.push({
       type: 'equipment',
-      item: this.generateEquipment(isElite ? 'rare' : 'common'),
+      item: this.generateEquipment(minRarity),
     })
 
-    // 奖励2：遗物或金币
-    if (Math.random() < 0.6) {
+    if (Math.random() < this.tuningConfig.rewards.relicDropRate) {
       rewards.push({
         type: 'relic',
-        item: this.generateRelic(isElite ? 'rare' : 'common'),
+        item: this.generateRelic(minRarity),
       })
     } else {
       rewards.push({
         type: 'gold',
-        amount: isElite ? 100 : 50,
+        amount: this.scaleGold(isElite ? 100 : 50),
       })
     }
 
-    // 奖励3：治疗或装备
-    if (Math.random() < 0.5) {
-      rewards.push({
-        type: 'heal',
-        amount: isElite ? 50 : 30,
-      })
-    } else {
+    if (Math.random() < this.tuningConfig.rewards.equipmentDropRate) {
       rewards.push({
         type: 'equipment',
         item: this.generateEquipment('common'),
+      })
+    } else {
+      rewards.push({
+        type: 'heal',
+        amount: isElite ? 50 : 30,
       })
     }
 
     return rewards
   }
 
-  /**
-   * 生成装备
-   */
+  applyEquipment(unitStats: UnitStats, equipment: Equipment): UnitStats {
+    const newStats = { ...unitStats }
+
+    Object.keys(equipment.stats).forEach(key => {
+      const statKey = key as keyof UnitStats
+      const value = equipment.stats[statKey]
+      if (value !== undefined) {
+        newStats[statKey] = (newStats[statKey] as number) + (value as number)
+      }
+    })
+
+    return newStats
+  }
+
+  private scaleGold(amount: number): number {
+    return Math.max(1, Math.round(amount * this.tuningConfig.rewards.goldMultiplier))
+  }
+
   private generateEquipment(minRarity: Rarity = 'common'): Equipment {
     const rarity = this.rollRarity(minRarity)
     const slot = this.randomSlot()
+    const equipmentPool = this.getEquipmentPool(slot)
+    const rarityPool = equipmentPool.filter(item => item.rarity === rarity)
+    const pool = rarityPool.length > 0 ? rarityPool : equipmentPool
 
-    const equipmentPool = this.getEquipmentPool(slot, rarity)
-    return equipmentPool[Math.floor(Math.random() * equipmentPool.length)]
+    return pool[Math.floor(Math.random() * pool.length)]
   }
 
-  /**
-   * 生成遗物
-   */
   private generateRelic(minRarity: Rarity = 'common'): Relic {
     const rarity = this.rollRarity(minRarity)
-    const relicPool = this.getRelicPool(rarity)
-    return relicPool[Math.floor(Math.random() * relicPool.length)]
+    const relicPool = this.getRelicPool()
+    const rarityPool = relicPool.filter(item => item.rarity === rarity)
+    const pool = rarityPool.length > 0 ? rarityPool : relicPool
+
+    return pool[Math.floor(Math.random() * pool.length)]
   }
 
-  /**
-   * 随机稀有度
-   */
   private rollRarity(minRarity: Rarity): Rarity {
     const rarities: Rarity[] = ['common', 'rare', 'epic', 'legendary']
     const minIndex = rarities.indexOf(minRarity)
-
     const roll = Math.random()
-    if (roll < 0.6) return rarities[minIndex] // 60% 最低稀有度
-    if (roll < 0.85 && minIndex + 1 < rarities.length) return rarities[minIndex + 1] // 25% 更高一级
-    if (roll < 0.95 && minIndex + 2 < rarities.length) return rarities[minIndex + 2] // 10% 更高两级
-    return rarities[Math.min(minIndex + 3, rarities.length - 1)] // 5% 最高
+
+    if (roll < 0.6) return rarities[minIndex]
+    if (roll < 0.85 && minIndex + 1 < rarities.length) return rarities[minIndex + 1]
+    if (roll < 0.95 && minIndex + 2 < rarities.length) return rarities[minIndex + 2]
+    return rarities[Math.min(minIndex + 3, rarities.length - 1)]
   }
 
-  /**
-   * 随机装备槽位
-   */
   private randomSlot(): EquipmentSlot {
     const slots: EquipmentSlot[] = ['weapon', 'armor', 'accessory']
     return slots[Math.floor(Math.random() * slots.length)]
   }
 
-  /**
-   * 获取装备池
-   */
-  private getEquipmentPool(slot: EquipmentSlot, rarity: Rarity): Equipment[] {
-    // 这里返回预定义的装备
-    // 实际应该从配置文件读取
+  private getEquipmentPool(slot: EquipmentSlot): Equipment[] {
     if (slot === 'weapon') {
       return [
         {
@@ -110,7 +118,9 @@ export class RewardGenerator {
           description: '锋利的钢剑',
         },
       ]
-    } else if (slot === 'armor') {
+    }
+
+    if (slot === 'armor') {
       return [
         {
           id: 'leather_armor',
@@ -129,63 +139,43 @@ export class RewardGenerator {
           description: '坚固的锁子甲',
         },
       ]
-    } else {
-      return [
-        {
-          id: 'ring_of_speed',
-          name: '速度之戒',
-          slot: 'accessory',
-          rarity: 'rare',
-          stats: { speed: 3 },
-          description: '提升行动速度',
-        },
-      ]
     }
+
+    return [
+      {
+        id: 'ring_of_speed',
+        name: '速度之戒',
+        slot: 'accessory',
+        rarity: 'rare',
+        stats: { speed: 3 },
+        description: '提升行动速度',
+      },
+    ]
   }
 
-  /**
-   * 获取遗物池
-   */
-  private getRelicPool(rarity: Rarity): Relic[] {
+  private getRelicPool(): Relic[] {
     return [
       {
         id: 'blood_ruby',
         name: '血红宝石',
         rarity: 'rare',
         effect: 'lifesteal',
-        description: '每次攻击回复5%造成的伤害',
+        description: '每次攻击回复 5% 造成的伤害',
       },
       {
         id: 'stone_heart',
         name: '石心',
         rarity: 'common',
         effect: 'hp_boost',
-        description: '最大生命+50，防御+10',
+        description: '最大生命 +50，防御 +10',
       },
       {
         id: 'phoenix_feather',
         name: '凤凰羽毛',
         rarity: 'legendary',
         effect: 'revive',
-        description: '首次死亡时复活，回复50%生命（每局限一次）',
+        description: '首次死亡时复活，回复 50% 生命',
       },
     ]
-  }
-
-  /**
-   * 应用装备到角色
-   */
-  applyEquipment(unitStats: UnitStats, equipment: Equipment): UnitStats {
-    const newStats = { ...unitStats }
-
-    Object.keys(equipment.stats).forEach(key => {
-      const statKey = key as keyof UnitStats
-      const value = equipment.stats[statKey]
-      if (value !== undefined) {
-        newStats[statKey] = (newStats[statKey] as number) + (value as number)
-      }
-    })
-
-    return newStats
   }
 }

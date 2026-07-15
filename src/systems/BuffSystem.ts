@@ -58,7 +58,7 @@ export class BuffSystem {
   static triggerBuffEffects(
     unit: Unit,
     trigger: 'onTurnStart' | 'onAction' | 'onHit' | 'onDamaged' | 'onTurnEnd',
-    value?: number
+    _value?: number
   ): { damage: number; healing: number; statModifiers: Record<string, number> } {
     let totalDamage = 0
     let totalHealing = 0

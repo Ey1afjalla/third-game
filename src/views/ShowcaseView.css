@@ -155,6 +155,15 @@
   font-size: 16px;
 }
 
+.cooldown-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 42px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
 /* 信息面板 */
 .info-panel {
   background-color: var(--color-bg-secondary);
@@ -162,6 +171,23 @@
   padding: var(--spacing-md);
   overflow-y: auto;
   max-height: 700px;
+}
+
+.info-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.info-tabs button {
+  min-width: 0;
+  padding: var(--spacing-sm);
+}
+
+.info-tabs button.active {
+  background-color: var(--color-accent-gold);
+  color: var(--color-bg-primary);
 }
 
 /* 日志区 */
@@ -200,6 +226,59 @@
 }
 
 .log-details {
+  color: var(--color-text-secondary);
+}
+
+.debug-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.debug-section h4 {
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.debug-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-accent-blue);
+  padding: var(--spacing-sm);
+}
+
+.debug-card.compact {
+  border-left-color: var(--color-accent-gold);
+}
+
+.debug-card strong,
+.debug-card span {
+  color: var(--color-text-primary);
+}
+
+.debug-card small {
+  color: var(--color-text-secondary);
+}
+
+.debug-card code,
+.formula-box {
+  display: block;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.empty-debug {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-primary);
   color: var(--color-text-secondary);
 }
 

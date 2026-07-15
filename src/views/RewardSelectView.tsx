@@ -24,13 +24,6 @@ const REWARD_NAMES: Record<string, string> = {
   upgrade: '升级',
 }
 
-const RARITY_COLORS: Record<string, string> = {
-  common: '#999',
-  rare: '#3b82f6',
-  epic: '#a855f7',
-  legendary: '#f59e0b',
-}
-
 export const RewardSelectView: React.FC<RewardSelectViewProps> = ({ rewards, onSelect, onClose }) => {
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null)
 

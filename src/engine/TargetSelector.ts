@@ -1,4 +1,4 @@
-import type { Unit, Skill, TargetRule } from '../types'
+import type { Unit, TargetRule } from '../types'
 
 export class TargetSelector {
   /**

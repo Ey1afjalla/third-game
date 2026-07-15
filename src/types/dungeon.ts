@@ -102,3 +102,4 @@ export interface EventOutcome {
   buff?: string
   description: string
 }
+import type { CombatResult, Unit, UnitStats } from './index'

@@ -1,14 +1,25 @@
-import React, { useState } from 'react'
-import { DungeonGenerator } from '../systems/DungeonGenerator'
+import React, { useEffect, useMemo, useState } from 'react'
+import { createDefaultTeam } from '../data/characters'
+import { EventGenerator } from '../systems/EventGenerator'
 import { GameState } from '../systems/GameState'
 import { RewardGenerator } from '../systems/RewardGenerator'
-import { EventGenerator } from '../systems/EventGenerator'
-import { createDefaultTeam } from '../data/characters'
-import { RewardSelectView } from './RewardSelectView'
 import { EventView } from './EventView'
+import { RewardSelectView } from './RewardSelectView'
 import { ShopView } from './ShopView'
-import type { DungeonPath, DungeonNode, NodeType, Reward, RandomEvent, EventChoice } from '../types/dungeon'
+import type { CombatResult } from '../types'
+import type {
+  DungeonNode,
+  DungeonPath,
+  Equipment,
+  EventChoice,
+  NodeType,
+  RandomEvent,
+  Relic,
+  Reward,
+} from '../types/dungeon'
 import './DungeonView.css'
+
+type OverlayType = 'none' | 'reward' | 'event' | 'shop'
 
 const NODE_ICONS: Record<NodeType, string> = {
   battle: '⚔️',
@@ -29,143 +40,194 @@ const NODE_NAMES: Record<NodeType, string> = {
 }
 
 interface DungeonViewProps {
+  combatResult?: CombatResult | null
   showRewardAfterCombat?: boolean
   onRewardHandled?: () => void
   onStartCombat?: () => void
 }
 
 export const DungeonView: React.FC<DungeonViewProps> = ({
+  combatResult = null,
   showRewardAfterCombat = false,
   onRewardHandled,
-  onStartCombat
+  onStartCombat,
 }) => {
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [path, setPath] = useState<DungeonPath | null>(null)
   const [overlayType, setOverlayType] = useState<OverlayType>('none')
   const [currentRewards, setCurrentRewards] = useState<Reward[]>([])
   const [currentEvent, setCurrentEvent] = useState<RandomEvent | null>(null)
+  const [guideNodeId, setGuideNodeId] = useState<string | null>(null)
 
-  React.useEffect(() => {
-    console.log('[DungeonView] Component mounted')
-
-    // 尝试加载存档
+  useEffect(() => {
     let state = GameState.loadFromLocalStorage()
 
-    // 如果没有存档，创建新游戏
     if (!state) {
-      console.log('[DungeonView] No save found, creating new game')
-      const team = createDefaultTeam()
-      state = new GameState(team)
+      state = new GameState(createDefaultTeam())
       state.saveToLocalStorage()
-    } else {
-      console.log('[DungeonView] Loaded existing save')
     }
 
     setGameState(state)
     setPath(state.getSave().dungeonPath)
-    console.log('[DungeonView] State initialized:', state.getSave())
+    setGuideNodeId(state.getSave().dungeonPath.currentNodeId)
   }, [])
 
+  useEffect(() => {
+    if (!showRewardAfterCombat || !gameState) return
+
+    const currentNode = gameState.getSave().dungeonPath.nodes.find(
+      node => node.id === gameState.getSave().dungeonPath.currentNodeId
+    )
+
+    handleBattleReward(currentNode?.type === 'elite')
+    onRewardHandled?.()
+  }, [showRewardAfterCombat, gameState, onRewardHandled])
+
+  const floors = useMemo(() => {
+    if (!path) return []
+
+    const grouped: DungeonNode[][] = []
+    for (let y = 0; y < path.maxDepth; y += 1) {
+      grouped.push(path.nodes.filter(node => node.y === y))
+    }
+    return grouped
+  }, [path])
+
+  const guideNode = useMemo(() => {
+    if (!path) return null
+
+    return path.nodes.find(node => node.id === guideNodeId)
+      ?? path.nodes.find(node => node.id === path.currentNodeId)
+      ?? path.nodes.find(node => node.state === 'completed')
+      ?? path.nodes.find(node => node.state === 'available')
+      ?? null
+  }, [guideNodeId, path])
+
+  const guideTargets = useMemo(() => {
+    if (!path || !guideNode) return []
+
+    return guideNode.connections
+      .map(nodeId => path.nodes.find(node => node.id === nodeId))
+      .filter((node): node is DungeonNode => Boolean(node))
+  }, [guideNode, path])
+
+  const highlightedTargetIds = useMemo(
+    () => new Set(guideTargets.map(node => node.id)),
+    [guideTargets]
+  )
+
+  const refreshPath = () => {
+    if (!gameState) return
+
+    const nextPath = gameState.getSave().dungeonPath
+    setPath(nextPath)
+    setGuideNodeId(nextPath.currentNodeId)
+  }
+
   const handleNodeClick = (node: DungeonNode) => {
-    // 允许点击current和available状态的节点
+    setGuideNodeId(node.id)
+
     if (!gameState || (node.state !== 'available' && node.state !== 'current')) {
-      console.log('[DungeonView] Node not clickable:', node.state)
       return
     }
 
-    console.log('[DungeonView] Clicked node:', node.type, node.id, node.state)
-
-    // 选择节点（如果是available状态，移动到该节点）
     if (node.state === 'available') {
       gameState.moveToNode(node.id)
       gameState.saveToLocalStorage()
-      setPath(gameState.getSave().dungeonPath)
+      refreshPath()
     }
 
-    // 根据节点类型执行对应操作
     switch (node.type) {
       case 'battle':
       case 'elite':
-        console.log('[DungeonView] 触发战斗:', node.type)
-        // 触发战斗回调
-        if (onStartCombat) {
-          console.log('[DungeonView] 调用onStartCombat回调')
-          onStartCombat()
-        } else {
-          console.log('[DungeonView] 没有onStartCombat回调，显示提示')
-          alert('战斗功能：需要从App.tsx传入onStartCombat回调')
-        }
+        onStartCombat?.()
         break
       case 'event':
-        console.log('[DungeonView] 触发事件')
         handleEvent()
         break
       case 'shop':
-        console.log('[DungeonView] 打开商店')
         setOverlayType('shop')
         break
       case 'rest':
-        console.log('[DungeonView] 休息恢复')
         gameState.healTeam(50)
         gameState.completeCurrentNode()
         gameState.saveToLocalStorage()
-        setPath(gameState.getSave().dungeonPath)
-        alert('在营地休息，全队恢复50点生命！')
+        refreshPath()
+        alert('在营地休息，全队恢复 50 点生命。')
         break
       case 'boss':
-        console.log('[DungeonView] Boss战')
-        alert('Boss战即将开始！\n\n（Boss战开发中）')
+        alert('Boss 战即将开始。')
         break
     }
   }
 
   const handleBattleReward = (isElite: boolean) => {
-    const rewardGen = new RewardGenerator()
-    const rewards = rewardGen.generateBattleRewards(isElite)
+    const rewards = new RewardGenerator().generateBattleRewards(isElite)
     setCurrentRewards(rewards)
     setOverlayType('reward')
   }
 
   const handleEvent = () => {
-    const eventGen = new EventGenerator()
-    const event = eventGen.generateEvent()
+    const event = new EventGenerator().generateEvent()
     setCurrentEvent(event)
     setOverlayType('event')
+  }
+
+  const handleEventChoice = (choice: EventChoice) => {
+    if (!gameState) return
+
+    const outcome = choice.outcome
+
+    if (outcome.damage) gameState.damageTeam(outcome.damage)
+    if (outcome.heal) gameState.healTeam(outcome.heal)
+    if (outcome.reward?.type === 'gold' && outcome.reward.amount) {
+      gameState.addGold(outcome.reward.amount)
+    } else if (outcome.reward?.type === 'equipment' || outcome.reward?.type === 'relic') {
+      const reward = new RewardGenerator()
+        .generateBattleRewards(false)
+        .find(item => item.type === outcome.reward?.type && item.item)
+
+      if (reward?.type === 'equipment' && reward.item) {
+        gameState.addEquipment(gameState.getSave().team[0].id, reward.item as Equipment)
+      } else if (reward?.type === 'relic' && reward.item) {
+        gameState.addRelic(reward.item as Relic)
+      }
+    }
+
+    gameState.completeCurrentNode(combatResult ?? undefined)
+    gameState.saveToLocalStorage()
+    refreshPath()
+    setCurrentEvent(null)
+    setOverlayType('none')
   }
 
   const handleRewardSelect = (reward: Reward) => {
     if (!gameState) return
 
-    // 应用奖励
     if (reward.type === 'equipment' && reward.item) {
-      const equipment = reward.item as any
-      gameState.addEquipment(gameState.getSave().team[0].id, equipment)
+      gameState.addEquipment(gameState.getSave().team[0].id, reward.item as Equipment)
     } else if (reward.type === 'relic' && reward.item) {
-      const relic = reward.item as any
-      gameState.addRelic(relic)
+      gameState.addRelic(reward.item as Relic)
     } else if (reward.type === 'gold' && reward.amount) {
       gameState.addGold(reward.amount)
     } else if (reward.type === 'heal' && reward.amount) {
       gameState.healTeam(reward.amount)
     }
 
-    // 完成当前节点
     gameState.completeCurrentNode()
     gameState.saveToLocalStorage()
-    setPath(gameState.getSave().dungeonPath)
+    refreshPath()
     setOverlayType('none')
   }
 
   const handleShopPurchase = (item: any) => {
     if (!gameState) return
 
-    // 扣除金币
     if (!gameState.spendGold(item.price)) {
-      alert('金币不足！')
+      alert('金币不足。')
       return
     }
 
-    // 应用物品
     if (item.type === 'equipment' && item.item) {
       gameState.addEquipment(gameState.getSave().team[0].id, item.item)
     } else if (item.type === 'relic' && item.item) {
@@ -175,36 +237,45 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
     }
 
     gameState.saveToLocalStorage()
-    setPath(gameState.getSave().dungeonPath)
+    refreshPath()
   }
 
   const handleShopClose = () => {
     if (!gameState) return
 
-    // 完成当前节点
     gameState.completeCurrentNode()
     gameState.saveToLocalStorage()
-    setPath(gameState.getSave().dungeonPath)
+    refreshPath()
     setOverlayType('none')
   }
 
   const renderNode = (node: DungeonNode) => {
+    const isGuideSource = guideNode?.id === node.id
+    const isGuideTarget = highlightedTargetIds.has(node.id)
+    const destinationText = getDestinationText(node, path)
     const classNames = [
       'dungeon-node',
       node.type,
       node.state,
-    ].join(' ')
+      isGuideSource ? 'route-source' : '',
+      isGuideTarget ? 'route-target' : '',
+    ].filter(Boolean).join(' ')
 
     return (
-      <div
+      <button
         key={node.id}
+        type="button"
         className={classNames}
         onClick={() => handleNodeClick(node)}
-        title={`${NODE_NAMES[node.type]} - ${node.state}`}
+        onMouseEnter={() => setGuideNodeId(node.id)}
+        onFocus={() => setGuideNodeId(node.id)}
+        disabled={node.state === 'locked'}
+        title={destinationText}
       >
-        <div className="node-icon">{NODE_ICONS[node.type]}</div>
-        <div className="node-type">{NODE_NAMES[node.type]}</div>
-      </div>
+        <span className="node-icon">{NODE_ICONS[node.type]}</span>
+        <span className="node-type">{NODE_NAMES[node.type]}</span>
+        {node.connections.length > 0 && <span className="route-count">{node.connections.length}</span>}
+      </button>
     )
   }
 
@@ -212,18 +283,10 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
     return <div className="dungeon-view">加载中...</div>
   }
 
-  // 按层组织节点
-  const floors: DungeonNode[][] = []
-  for (let y = 0; y < path.maxDepth; y++) {
-    const floorNodes = path.nodes.filter(n => n.y === y)
-    floors.push(floorNodes)
-  }
-
   const save = gameState.getSave()
 
   return (
     <div className="dungeon-view">
-      {/* 游戏信息 */}
       <div className="game-info">
         <div className="info-item">
           <span className="info-label">当前层数:</span>
@@ -239,35 +302,33 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
         </div>
       </div>
 
-      {/* 地下城地图 */}
       <div className="dungeon-map panel">
         <h3 className="panel-header">地下城路线</h3>
+        <RouteGuide source={guideNode} targets={guideTargets} />
         <div className="dungeon-grid">
           {floors.map((floorNodes, floorIndex) => (
             <div key={floorIndex} className="dungeon-floor">
               <div className="floor-label">第 {floorIndex + 1} 层</div>
-              {floorNodes.map(node => renderNode(node))}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 队伍状态 */}
-      <div className="team-status panel mt-md">
-        <h3 className="panel-header">队伍状态</h3>
-        <div className="team-grid">
-          {save.team.map(unit => (
-            <div key={unit.id} className="team-member">
-              <div className="member-name">{unit.name}</div>
-              <div className="member-hp">
-                HP: {unit.hp} / {unit.stats.maxHp}
+              <div className="floor-nodes">
+                {floorNodes.map(node => renderNode(node))}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* 奖励选择界面 */}
+      <div className="team-status panel mt-md">
+        <h3 className="panel-header">队伍状态</h3>
+        <div className="team-grid">
+          {save.team.map(unit => (
+            <div key={unit.id} className="team-member">
+              <div className="member-name">{unit.name}</div>
+              <div className="member-hp">HP: {unit.hp} / {unit.stats.maxHp}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {overlayType === 'reward' && (
         <RewardSelectView
           rewards={currentRewards}
@@ -276,14 +337,56 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
         />
       )}
 
-      {/* 商店界面 */}
-      {overlayType === 'shop' && gameState && (
+      {overlayType === 'shop' && (
         <ShopView
           currentGold={gameState.getSave().gold}
           onPurchase={handleShopPurchase}
           onClose={handleShopClose}
         />
       )}
+
+      {overlayType === 'event' && currentEvent && (
+        <EventView event={currentEvent} onChoice={handleEventChoice} />
+      )}
     </div>
   )
+}
+
+const RouteGuide: React.FC<{ source: DungeonNode | null; targets: DungeonNode[] }> = ({ source, targets }) => {
+  if (!source) {
+    return <div className="route-guide">选择或悬停一个节点查看路线。</div>
+  }
+
+  return (
+    <div className="route-guide">
+      <div className="route-summary">
+        <strong>路线指引:</strong>
+        <span>第 {source.y + 1} 层 {NODE_NAMES[source.type]}</span>
+        {targets.length > 0 ? <span>可通往</span> : <span>没有后续节点</span>}
+      </div>
+      {targets.length > 0 && (
+        <div className="route-target-list">
+          {targets.map(target => (
+            <span key={target.id} className={`route-link ${target.state}`}>
+              第 {target.y + 1} 层 {NODE_NAMES[target.type]}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const getDestinationText = (node: DungeonNode, path: DungeonPath | null): string => {
+  if (!path || node.connections.length === 0) {
+    return `${NODE_NAMES[node.type]} - 没有后续节点`
+  }
+
+  const destinations = node.connections
+    .map(nodeId => path.nodes.find(target => target.id === nodeId))
+    .filter((target): target is DungeonNode => Boolean(target))
+    .map(target => `第 ${target.y + 1} 层 ${NODE_NAMES[target.type]}`)
+    .join('、')
+
+  return `${NODE_NAMES[node.type]} 可通往：${destinations}`
 }

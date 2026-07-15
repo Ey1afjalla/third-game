@@ -1,4 +1,4 @@
-import type { RandomEvent, EventChoice, EventOutcome } from '../types/dungeon'
+import type { RandomEvent } from '../types/dungeon'
 
 export class EventGenerator {
   /**

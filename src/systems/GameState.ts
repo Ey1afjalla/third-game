@@ -1,4 +1,4 @@
-import type { GameSave, DungeonPath, Reward, Equipment, Relic } from '../types/dungeon'
+import type { GameSave, Equipment, Relic } from '../types/dungeon'
 import type { Unit, CombatResult } from '../types'
 import { DungeonGenerator } from './DungeonGenerator'
 
@@ -57,7 +57,7 @@ export class GameState {
     // 增加楼层
     const currentNode = this.save.dungeonPath.nodes.find(n => n.id === currentNodeId)
     if (currentNode) {
-      this.save.currentFloor = currentNode.y
+      this.save.currentFloor = Math.min(currentNode.y + 1, this.save.dungeonPath.maxDepth - 1)
     }
   }
 
@@ -175,7 +175,10 @@ export class GameState {
     try {
       const save: GameSave = JSON.parse(data)
       const gameState = new GameState(save.team)
+      const dungeonGen = new DungeonGenerator()
+      save.dungeonPath = dungeonGen.repairDungeon(save.dungeonPath)
       gameState.save = save
+      gameState.saveToLocalStorage()
       return gameState
     } catch (e) {
       console.error('Failed to load save:', e)

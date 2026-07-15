@@ -23,14 +23,13 @@ export type BuffTrigger =
   | 'onDamaged'
   | 'onTurnEnd'
 
-export enum UnitState {
-  IDLE = 'idle',
-  CHOOSING_TARGET = 'choosing_target',
-  CASTING = 'casting',
-  RECOVERING = 'recovering',
-  STUNNED = 'stunned',
-  DEAD = 'dead',
-}
+export type UnitState =
+  | 'idle'
+  | 'choosing_target'
+  | 'casting'
+  | 'recovering'
+  | 'stunned'
+  | 'dead'
 
 // 单位基础属性
 export interface UnitStats {
