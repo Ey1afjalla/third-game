@@ -45,14 +45,26 @@ export const DungeonView: React.FC<DungeonViewProps> = ({
   const [currentRewards, setCurrentRewards] = useState<Reward[]>([])
   const [currentEvent, setCurrentEvent] = useState<RandomEvent | null>(null)
 
-  // 如果战斗结束后需要显示奖励
   React.useEffect(() => {
-    if (showRewardAfterCombat && onRewardHandled) {
-      // 自动触发奖励选择
-      handleBattleReward(false)
-      onRewardHandled()
+    console.log('[DungeonView] Component mounted')
+
+    // 尝试加载存档
+    let state = GameState.loadFromLocalStorage()
+
+    // 如果没有存档，创建新游戏
+    if (!state) {
+      console.log('[DungeonView] No save found, creating new game')
+      const team = createDefaultTeam()
+      state = new GameState(team)
+      state.saveToLocalStorage()
+    } else {
+      console.log('[DungeonView] Loaded existing save')
     }
-  }, [showRewardAfterCombat])
+
+    setGameState(state)
+    setPath(state.getSave().dungeonPath)
+    console.log('[DungeonView] State initialized:', state.getSave())
+  }, [])
 
   const handleNodeClick = (node: DungeonNode) => {
     // 允许点击current和available状态的节点
