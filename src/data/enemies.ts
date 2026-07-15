@@ -11,7 +11,7 @@ export function createSkeletonSoldier(id: string = 'skeleton_soldier_1'): Unit {
     role: 'tank' as UnitRole,
     position: 'front' as UnitPosition,
     stats: {
-      maxHp: 120,  // 从 80 增加到 120
+      maxHp: 120,
       attack: 15,
       defense: 10,
       speed: 10,
@@ -68,7 +68,7 @@ export function createSkeletonArcher(id: string = 'skeleton_archer_1'): Unit {
     role: 'dps' as UnitRole,
     position: 'back' as UnitPosition,
     stats: {
-      maxHp: 90,  // 从 60 增加到 90
+      maxHp: 90,
       attack: 20,
       defense: 5,
       speed: 13,
@@ -125,7 +125,7 @@ export function createSkeletonMage(id: string = 'skeleton_mage_1'): Unit {
     role: 'mage' as UnitRole,
     position: 'back' as UnitPosition,
     stats: {
-      maxHp: 100,  // 从 70 增加到 100
+      maxHp: 100,
       attack: 22,
       defense: 8,
       speed: 11,
@@ -191,4 +191,23 @@ export function createMixedEnemyGroup(): Unit[] {
     createSkeletonArcher('skeleton_archer_1'),
     createSkeletonMage('skeleton_mage_1'),
   ]
+}
+
+/**
+ * 创建指定数量的敌人
+ */
+export function createEnemies(count: number = 3): Unit[] {
+  const enemies: Unit[] = []
+
+  for (let i = 0; i < count; i++) {
+    if (i === 0) {
+      enemies.push(createSkeletonSoldier(`skeleton_soldier_${i + 1}`))
+    } else if (i === 1) {
+      enemies.push(createSkeletonArcher(`skeleton_archer_${i + 1}`))
+    } else {
+      enemies.push(createSkeletonMage(`skeleton_mage_${i + 1}`))
+    }
+  }
+
+  return enemies
 }
