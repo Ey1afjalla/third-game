@@ -3,10 +3,11 @@ import './App.css'
 import { CombatView } from './views/CombatView'
 import { DungeonView } from './views/DungeonView'
 import { ShowcaseView } from './views/ShowcaseView'
+import { TuningPanel } from './views/TuningPanel'
 import type { CombatResult } from './types'
 
 function App() {
-  const [gameState, setGameState] = useState<'menu' | 'combat' | 'dungeon' | 'showcase'>('menu')
+  const [gameState, setGameState] = useState<'menu' | 'combat' | 'dungeon' | 'showcase' | 'tuning'>('menu')
   const [showRewardAfterCombat, setShowRewardAfterCombat] = useState(false)
   const [combatResult, setCombatResult] = useState<CombatResult | null>(null)
 
